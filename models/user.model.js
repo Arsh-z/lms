@@ -72,7 +72,7 @@ const userSchema = new mongoose.Schema({
 });
 
 //hashing the password
-userSchema.pre('save',async)
+userSchema.pre('save',async function(next))
 
 
 export const User = mongoose.model('User', userSchema)
