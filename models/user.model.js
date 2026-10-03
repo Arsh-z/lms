@@ -2,9 +2,7 @@ import mongoose from "mongoose";
 
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
-import { kMaxLength } from "buffer";
-import { match } from "assert";
-import { type } from "os";
+
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -68,11 +66,45 @@ const userSchema = new mongoose.Schema({
         default:Date.now
   }
 }, {
-    timestamps: true
+  timestamps: true,
+  toJSON: { virtuals: true },
+  toObject: {virtuals:true},
 });
 
 //hashing the password
-userSchema.pre('save',async function(next))
+userSchema.pre('save', async function (next) {
+  if (!this.isModified("password")) {
+    return next();
+  }
+  this.password = await bcrypt.hash(this.password, 12)
+  next();
+})
 
+//compare password
+userSchema.methods.comparePassword = async function (enterPassword) {
+  return await bcrypt.compare(enterPassword, this.password
+  )
+}
+
+userSchema.methods.getResetPasswordToken = function () {
+  const resetToken = crypto.randomBytes(20).toString('hex')
+  this.getResetPasswordToken = crypto
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex')
+    this.resetPasswordExpire = Date.now() + 10 * 60 * 10000 //10minutes
+    return resetToken
+
+}
+
+userSchema.methods.updateLastActive = function () {
+  this.lastActive = Date.now();
+  return this.lastActive({ validateBeforeSave :false});
+};
+
+//virtual field for total enrolled courses
+userSchema.virtual("totalEnrolledCourses").get(function () {
+  return this.enrolledCourses.length;
+});
 
 export const User = mongoose.model('User', userSchema)
