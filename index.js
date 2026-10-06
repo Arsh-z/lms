@@ -8,8 +8,12 @@ import mongoSanitize from "express-mongo-sanitize";
 import hpp from "hpp";
 import cookieParser from "cookie-parser";
 import cors from "cors"
+import { checkHealth } from "./controllers/health.controllers";
 
+import healthRoute from "./routes/health.routes" 
 dotenv.config();
+
+import userRoute from "./routes/user.routes.js"
 
 const app = express();
 const PORT = process.env.PORT;
@@ -71,9 +75,10 @@ app.use(
 );
 
 
-//Api Routes
+//Api Routes localhost:4000/api/v1/user/....
 
-
+app.use("/health", healthRoute);
+app.use("/api/v1/user",userRoute)
 
 
 //404 handler it should be always in bottom
