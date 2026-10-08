@@ -104,3 +104,4 @@ coursePurchaseSchema.methods.processRefund = async function (reason, amount) {
 const CoursePurchase = mongoose.model("CoursePurchase", coursePurchaseSchema);
 
 export default CoursePurchase;
+

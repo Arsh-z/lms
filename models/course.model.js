@@ -271,3 +271,4 @@ courseSchema.set("toObject", {
 
 
 export default Course = mongoose.model("Course",courseSchema)
+
